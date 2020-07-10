@@ -1,0 +1,23 @@
+---
+- hosts: all
+  become: True
+  gather_facts: False
+
+  pre_tasks:
+    - raw: test -e /usr/bin/python3 || (apt -y update && apt install -y python3)
+    - setup: # aka gather_facts
+
+  vars_files:
+  #   - "../vars/web_server_vars.yml"
+  #   - "../vars/web_server_vhosts_common.yml"
+  #   - "../vars/web_server_vhosts_{{ target_environment }}.yml"
+  #   - "../vars/web_server_vault.yml"
+
+  roles:
+    - { role: common }
+#    - { role: webserver.utils }
+#    - { role: geerlingguy.apache }
+#    - { role: geerlingguy.php }
+#    - { role: geerlingguy.postfix }
+#    - { role: franklinkim.environment }
+#    - { role: webserver.postinstall }

@@ -1,0 +1,54 @@
+{
+  "variables": {
+    "ansible_host": "default",
+    "ansible_connection": "docker"
+  },
+  "builders": [
+    {
+      "type": "docker",
+      "image": "ubuntu:20.04",
+      "commit": "true",
+      "run_command": [
+        "-d",
+        "-i",
+        "-t",
+        "--name",
+        "{{user `ansible_host`}}",
+        "{{.Image}}",
+        "/bin/bash"
+      ],
+      "changes": [
+        "EXPOSE 3306",
+        "CMD [\"mysqld\"]"
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+        "apt-get update",
+        "apt-get install sudo -yq"
+      ]
+    },
+    {
+      "type": "ansible",
+      "playbook_file": "../ansible/database_server.yml",
+      "extra_arguments": [
+        "--vault-id=~/.ansible_vault"
+      ],
+      "ansible_env_vars": [
+        "ANSIBLE_SSH_ARGS='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o AddKeysToAgent=no'"
+      ]
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "type": "docker-tag",
+        "repository": "spk_local/dbserver",
+        "tag": "1.0"
+      }
+    ]
+  ]
+}

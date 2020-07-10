@@ -1,0 +1,34 @@
+---
+- name: Update all packages to the latest version
+  apt:
+    upgrade: dist
+  become: True
+
+- name: Ensure NTP is installed
+  apt:
+    name: ntp
+    state: present
+  become: True
+
+- name: Ensure the NTP service is running and enabled
+  service:
+    name: ntp
+    state: started
+    enabled: True
+  become: True
+
+- name: Ensure the MOTD file is present and updated
+  template:
+    src: motd
+    dest: /etc/motd
+    owner: root
+    group: root
+    mode: 0644
+  become: True
+
+- name: install tool and utility packages for general use (git, curl, wget, vim, awscli, etc.)
+  apt:
+    name: ['language-pack-en', 'vim', 'htop', 'git', 'curl', 'wget', 'awscli']
+    update_cache: yes
+    state: latest
+  become: True

@@ -28,3 +28,12 @@ variable "private_key" {
 variable "ansible_user" {
   default = "ubuntu"
 }
+
+variable "additional_tags" {
+  default     = {
+    "Department" = "Automation",
+    "Project"    = "Symfony-project-kickstart"
+  }
+  description = "Additional resource tags"
+  type        = map(string)
+}

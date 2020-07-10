@@ -1,6 +1,7 @@
 resource "aws_key_pair" "terraform_executor_key" {
   key_name   = "terraform_executor"
   public_key = file(var.public_key)
+  tags       = var.additional_tags
 }
 
 resource "aws_instance" "webserver" {
@@ -27,20 +28,23 @@ resource "aws_instance" "webserver" {
     user        = var.ansible_user
   }
 
-  # Ansible requires Python to be installed on the remote machine as well as the local machine.
+  # Just saying hello to our new machine -this workaround makes the local-exec waits until the machine is available for ssh
   provisioner "remote-exec" {
     inline = [
-      "sudo apt-get -qq install python -y"]
+      "echo 'hello, world'"]
+
+    connection {
+      type        = "ssh"
+      user        = var.ansible_user
+      private_key = file(var.private_key)
+    }
   }
 
-  # This is where we configure the instance with ansible-playbook
   provisioner "local-exec" {
-    command = <<EOT
-      echo "${aws_instance.webserver.public_ip} ansible_user=${var.ansible_user} ansible_ssh_private_key_file=${var.private_key}";
-      export ANSIBLE_HOST_KEY_CHECKING=False;
-      ansible-playbook -u ${var.ansible_user} --private-key ${var.private_key} -i jenkins-ci.ini ../playbooks/install_webserver.yaml
-    EOT
+    command = "ansible-playbook -u ${var.ansible_user} -i '${self.public_ip},' --private-key ${var.private_key} ../ansible/webserver.yml"
   }
+
+  tags = var.additional_tags
 }
 
 resource "aws_instance" "dbserver" {
@@ -67,20 +71,23 @@ resource "aws_instance" "dbserver" {
     user        = var.ansible_user
   }
 
-  # Ansible requires Python to be installed on the remote machine as well as the local machine.
+  # Just saying hello to our new machine -this workaround makes the local-exec waits until the machine is available for ssh
   provisioner "remote-exec" {
     inline = [
-      "sudo apt-get -qq install python -y"]
+      "echo 'hello, world'"]
+
+    connection {
+      type        = "ssh"
+      user        = var.ansible_user
+      private_key = file(var.private_key)
+    }
   }
 
-  # This is where we configure the instance with ansible-playbook
   provisioner "local-exec" {
-    command = <<EOT
-      echo "${aws_instance.dbserver.public_ip} ansible_user=${var.ansible_user} ansible_ssh_private_key_file=${var.private_key}";
-      export ANSIBLE_HOST_KEY_CHECKING=False;
-      ansible-playbook -u ${var.ansible_user} --private-key ${var.private_key} -i jenkins-ci.ini ../playbooks/install_dbserver.yaml
-    EOT
+    command = "ansible-playbook -u ${var.ansible_user} -i '${self.public_ip},' --private-key ${var.private_key} ../ansible/database_server.yml"
   }
+
+  tags = var.additional_tags
 }
 
 resource "aws_security_group" "web" {
@@ -102,6 +109,8 @@ resource "aws_security_group" "web" {
     cidr_blocks = [
       "0.0.0.0/0"]
   }
+
+  tags = var.additional_tags
 }
 
 resource "aws_security_group" "ssh" {
@@ -129,6 +138,8 @@ resource "aws_security_group" "egress-tls" {
     cidr_blocks = [
       "0.0.0.0/0"]
   }
+
+  tags = var.additional_tags
 }
 
 resource "aws_security_group" "ping-ICMP" {
@@ -144,9 +155,13 @@ resource "aws_security_group" "ping-ICMP" {
     ipv6_cidr_blocks = [
       "::/0"]
   }
+
+  tags = var.additional_tags
 }
 
 resource "aws_eip" "ip" {
   vpc      = true
   instance = aws_instance.webserver.id
+
+  tags = var.additional_tags
 }
