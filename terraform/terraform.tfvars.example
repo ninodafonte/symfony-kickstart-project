@@ -1,0 +1,9 @@
+region       = "eu-west-1"
+amis         = {
+  "eu-west-1" = "ami-049f322a544cfcf88"
+}
+ec2_size     = "t3a.micro"
+aws_profile  = "someAWSProfileUser"
+public_key   = "~/.ssh/your_key.pub"
+private_key  = "~/.ssh/your_key.pem"
+ansible_user = "ubuntu"
