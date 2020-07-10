@@ -37,3 +37,7 @@ variable "additional_tags" {
   description = "Additional resource tags"
   type        = map(string)
 }
+
+variable "deployment_s3_bucket" {
+  default = "someBucketName"
+}

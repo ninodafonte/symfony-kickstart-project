@@ -1,4 +1,9 @@
 ---
+- name: Update repositories cache
+  apt:
+    update_cache: yes
+  become: True
+
 - name: Update all packages to the latest version
   apt:
     upgrade: dist
