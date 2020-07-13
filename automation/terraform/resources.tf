@@ -7,9 +7,11 @@ resource "aws_key_pair" "terraform_executor_key" {
 resource "aws_instance" "webserver" {
   ami                  = var.amis[var.region]
   instance_type        = var.ec2_size
+  subnet_id            = aws_subnet.subnet_public.id
+  private_ip           = var.webserver_private_ip
   key_name             = aws_key_pair.terraform_executor_key.key_name
   iam_instance_profile = aws_iam_instance_profile.access_to_s3_for_ec2_profile.name
-  tags                 = merge(var.additional_tags, {
+  tags = merge(var.additional_tags, {
     "Role" = "SPK_WebServer"
   })
 
@@ -33,7 +35,7 @@ resource "aws_instance" "webserver" {
   # Just saying hello to our new machine -this workaround makes the local-exec waits until the machine is available for ssh
   provisioner "remote-exec" {
     inline = [
-      "echo 'hello, world'"]
+    "echo 'hello, world'"]
 
     connection {
       type        = "ssh"
@@ -50,9 +52,11 @@ resource "aws_instance" "webserver" {
 resource "aws_instance" "dbserver" {
   ami                  = var.amis[var.region]
   instance_type        = var.ec2_size
+  subnet_id            = aws_subnet.subnet_public.id
+  private_ip           = var.dbserver_private_ip
   key_name             = aws_key_pair.terraform_executor_key.key_name
   iam_instance_profile = aws_iam_instance_profile.access_to_s3_for_ec2_profile.name
-  tags                 = merge(var.additional_tags, {
+  tags = merge(var.additional_tags, {
     "Role" = "SPK_DBServer"
   })
 
@@ -76,7 +80,7 @@ resource "aws_instance" "dbserver" {
   # Just saying hello to our new machine -this workaround makes the local-exec waits until the machine is available for ssh
   provisioner "remote-exec" {
     inline = [
-      "echo 'hello, world'"]
+    "echo 'hello, world'"]
 
     connection {
       type        = "ssh"
@@ -93,21 +97,22 @@ resource "aws_instance" "dbserver" {
 resource "aws_security_group" "web" {
   name        = "default-web"
   description = "Security group for web that allows web traffic from internet"
+  vpc_id      = aws_vpc.vpc.id
 
   ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
+    from_port = 80
+    to_port   = 80
+    protocol  = "tcp"
     cidr_blocks = [
-      "0.0.0.0/0"]
+    "0.0.0.0/0"]
   }
 
   ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
+    from_port = 443
+    to_port   = 443
+    protocol  = "tcp"
     cidr_blocks = [
-      "0.0.0.0/0"]
+    "0.0.0.0/0"]
   }
 
   tags = var.additional_tags
@@ -116,27 +121,28 @@ resource "aws_security_group" "web" {
 resource "aws_security_group" "ssh" {
   name        = "default-ssh"
   description = "Security group for nat instances that allows SSH and VPN traffic from internet"
+  vpc_id      = aws_vpc.vpc.id
 
   ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
+    from_port = 22
+    to_port   = 22
+    protocol  = "tcp"
     cidr_blocks = [
-      "0.0.0.0/0"]
+    "0.0.0.0/0"]
   }
 }
 
 resource "aws_security_group" "egress-tls" {
   name        = "default-egress-tls"
   description = "Default security group that allows inbound and outbound traffic from all instances in the VPC"
-  #vpc_id      = "${aws_vpc.my-vpc.id}"
+  vpc_id      = aws_vpc.vpc.id
 
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+    from_port = 0
+    to_port   = 0
+    protocol  = "-1"
     cidr_blocks = [
-      "0.0.0.0/0"]
+    "0.0.0.0/0"]
   }
 
   tags = var.additional_tags
@@ -145,18 +151,52 @@ resource "aws_security_group" "egress-tls" {
 resource "aws_security_group" "ping-ICMP" {
   name        = "default-ping"
   description = "Default security group that allows to ping the instance"
+  vpc_id      = aws_vpc.vpc.id
 
   ingress {
-    from_port        = -1
-    to_port          = -1
-    protocol         = "icmp"
-    cidr_blocks      = [
-      "0.0.0.0/0"]
+    from_port = -1
+    to_port   = -1
+    protocol  = "icmp"
+    cidr_blocks = [
+    "0.0.0.0/0"]
     ipv6_cidr_blocks = [
-      "::/0"]
+    "::/0"]
   }
 
   tags = var.additional_tags
+}
+
+resource "aws_vpc" "vpc" {
+  cidr_block           = var.cidr_vpc
+  enable_dns_support   = true
+  enable_dns_hostnames = true
+  tags                 = var.additional_tags
+}
+
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.vpc.id
+  tags   = var.additional_tags
+}
+
+resource "aws_subnet" "subnet_public" {
+  vpc_id                  = aws_vpc.vpc.id
+  cidr_block              = var.cidr_subnet
+  map_public_ip_on_launch = "true"
+  tags                    = var.additional_tags
+}
+
+resource "aws_route_table" "rtb_public" {
+  vpc_id = aws_vpc.vpc.id
+  tags   = var.additional_tags
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.igw.id
+  }
+}
+
+resource "aws_route_table_association" "rta_subnet_public" {
+  subnet_id      = aws_subnet.subnet_public.id
+  route_table_id = aws_route_table.rtb_public.id
 }
 
 resource "aws_eip" "ip" {

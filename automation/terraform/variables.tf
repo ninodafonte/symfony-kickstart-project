@@ -30,7 +30,7 @@ variable "ansible_user" {
 }
 
 variable "additional_tags" {
-  default     = {
+  default = {
     "Department" = "Automation",
     "Project"    = "Symfony-project-kickstart"
   }
@@ -40,4 +40,24 @@ variable "additional_tags" {
 
 variable "deployment_s3_bucket" {
   default = "someBucketName"
+}
+
+variable "cidr_vpc" {
+  description = "CIDR block for the VPC"
+  default     = "10.1.0.0/16"
+}
+
+variable "cidr_subnet" {
+  description = "CIDR block for the subnet"
+  default     = "10.1.0.0/24"
+}
+
+variable "webserver_private_ip" {
+  description = "Private IP for webserver"
+  default     = "10.1.0.1"
+}
+
+variable "dbserver_private_ip" {
+  description = "Private IP for dbserver"
+  default     = "10.1.0.2"
 }
