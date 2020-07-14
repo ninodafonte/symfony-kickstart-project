@@ -18,7 +18,7 @@ variable "amis" {
 }
 
 variable "ec2_size" {
-  default = "t3a.micro"
+  default = "t2.micro"
 }
 
 variable "private_key" {
@@ -30,7 +30,7 @@ variable "ansible_user" {
 }
 
 variable "additional_tags" {
-  default = {
+  default     = {
     "Department" = "Automation",
     "Project"    = "Symfony-project-kickstart"
   }
@@ -60,4 +60,9 @@ variable "webserver_private_ip" {
 variable "dbserver_private_ip" {
   description = "Private IP for dbserver"
   default     = "10.1.0.2"
+}
+
+variable "application_name" {
+  description = "Application name to identify ec2 machines for this terraform execution"
+  default     = "someApplication"
 }
