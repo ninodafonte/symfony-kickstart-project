@@ -1,0 +1,12 @@
+version: '3'
+services:
+  web:
+    image: "spk_local/webserver:latest"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - .:/var/www/symfony-project-kickstart:cached
+    environment:
+      XDEBUG_CONFIG: "remote_host=host.docker.internal remote_enable=1"
+      PHP_IDE_CONFIG: "serverName=my.local"

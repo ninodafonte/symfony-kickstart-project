@@ -1,0 +1,38 @@
+---
+############################################
+#
+# Apache vhosts
+#
+############################################
+apache_vhosts_common:
+  - servername: "www.example.com"
+    documentroot: "/var/www/symfony-project-kickstart/public"
+    allow_override: 'All'
+    option: 'FollowSymLinks MultiViews'
+    extra_parameters: |
+      ## Logging
+      ErrorLog "/var/log/apache2/symfony-project-kickstart_error_ssl.log"
+      ServerSignature Off
+      CustomLog "/var/log/apache2/symfony-project-kickstart_access_ssl.log" combined
+
+############################################
+#
+# Apache SSL vhosts
+#
+############################################
+
+apache_vhosts_ssl_common:
+  - servername: "www.example.com"
+    documentroot: "/var/www/symfony-project-kickstart/public"
+    certificate_file: "/etc/ssl/crt/localdomains.crt"
+    certificate_key_file: "/etc/ssl/crt/localdomains.key"
+    allow_override: 'All'
+    option: 'FollowSymLinks MultiViews'
+    extra_parameters: |
+      ## Logging
+      ErrorLog "/var/log/apache2/symfony-project-kickstart_error_ssl.log"
+      ServerSignature Off
+      CustomLog "/var/log/apache2/symfony-project-kickstart_access_ssl.log" combined
+
+      ## SSL directives
+      SSLCACertificatePath    "/etc/ssl/crt"

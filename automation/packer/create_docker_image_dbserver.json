@@ -19,7 +19,8 @@
       ],
       "changes": [
         "EXPOSE 3306",
-        "CMD [\"mysqld\"]"
+        "CMD [\"mysqld\"]",
+        "LABEL project=sbk"
       ]
     }
   ],
@@ -47,7 +48,7 @@
       {
         "type": "docker-tag",
         "repository": "spk_local/dbserver",
-        "tag": "1.0"
+        "tag": "latest"
       }
     ]
   ]

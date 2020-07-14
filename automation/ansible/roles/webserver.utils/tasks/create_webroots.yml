@@ -1,0 +1,8 @@
+---
+- name: Create webroots for sites
+  file:
+    path={{ item }}
+    state=directory
+  with_items:
+    - /var/www/symfony-project-kickstart
+  become: True

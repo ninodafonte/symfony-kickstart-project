@@ -1,0 +1,116 @@
+---
+- name: Ensure needed packages are installed
+  apt:
+    name: ['composer', 'nodejs', 'npm', 'ruby', 'software-properties-common', 'ca-certificates', 'python3-pip']
+
+- name: set timezone to Europe/Madrid
+  timezone:
+    name: Europe/Madrid
+
+# Add specified repository into sources list.
+- apt_repository:
+    repo: ppa:ondrej/php
+
+- apt_repository:
+    repo: ppa:ondrej/apache2
+
+- name: Run the equivalent of "apt-get update" as a separate step
+  apt:
+    update_cache: yes
+
+- name: Create a symbolink link to configure tzdata (and avoid problems installing php7.2)
+  file:
+    src: "/usr/share/zoneinfo/Europe/Berlin"
+    dest: "/etc/localtime"
+    state: link
+    force: yes
+
+- name: Install "less" node.js package globally.
+  npm:
+    name: less
+    global: yes
+
+- name: Ensure aws module dependencies are installed
+  pip:
+    name: ['boto3', 'botocore']
+    executable: "pip3"
+
+- name: Create self-signed certificates folder if not exists
+  file:
+    path=/etc/ssl/crt
+    state=directory
+  when: target_environment == "dev"
+
+- name: Create certificate file for localdomain
+  template:
+    src: localdomains.crt.j2
+    dest: /etc/ssl/crt/localdomains.crt
+    mode: 0744
+  when: target_environment == "dev"
+
+- name: Create key file for localdomain
+  template:
+    src: localdomains.key.j2
+    dest: /etc/ssl/crt/localdomains.key
+    mode: 0744
+  when: target_environment == "dev"
+
+- name: Create startup command for docker image
+  template:
+    src: http_foreground.sh.j2
+    dest: /usr/local/bin/http_foreground.sh
+    mode: 0744
+  when: target_environment == "dev"
+
+# Merge php packages list based on environment:
+- name: Merge php packages list when in dev.
+  set_fact:
+    php_packages: "{{ php_packages_common }} + {{ php_packages_dev }}"
+  when: target_environment == "dev"
+
+- name: Merge php packages list when in prod.
+  set_fact:
+    php_packages: "{{ php_packages_common }} + {{ php_packages_prod }}"
+  when: target_environment == "prod"
+
+# Merge vhosts definition list based on environment:
+- name: Merge vhosts definition list when in DEV.
+  set_fact:
+    apache_vhosts: "{{ apache_vhosts_common }} + {{ apache_vhosts_dev }}"
+  when: target_environment == "dev"
+
+- name: Merge vhosts definition list when in PROD.
+  set_fact:
+    apache_vhosts: "{{ apache_vhosts_common }} + {{ apache_vhosts_prod }}"
+  when: target_environment == "prod"
+
+- name: Merge vhosts SSL definition list when in DEV.
+  set_fact:
+    apache_vhosts_ssl: "{{ apache_vhosts_ssl_common }} + {{ apache_vhosts_ssl_dev }}"
+  when: target_environment == "dev"
+
+- name: Merge vhosts SSL definition list when in PROD.
+  set_fact:
+    apache_vhosts_ssl: "{{ apache_vhosts_ssl_common }} + {{ apache_vhosts_ssl_prod }}"
+  when: target_environment == "prod"
+
+# Set environment variables for server:
+- name: Configure env variables for dev servers
+  set_fact:
+    environment_config:
+      SYMFONY_ENV: 'dev'
+  when: target_environment == "dev"
+
+- name: Configure env variables for prod servers
+  set_fact:
+    environment_config:
+      SYMFONY_ENV: 'prod'
+  when: target_environment == "prod"
+
+# Create folders for webroots in production servers
+- include_tasks: create_webroots.yml
+  when: target_environment == "prod"
+
+# Include Code Deploy Agent when building image for AWS (prod)
+- include_tasks: install_codedeploy.yml
+  when: target_environment == "prod"

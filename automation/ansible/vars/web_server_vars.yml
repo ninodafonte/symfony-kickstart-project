@@ -1,0 +1,65 @@
+---
+############################################
+#
+# Apache related variables
+#
+############################################
+apache_remove_default_vhost: true
+
+apache_ignore_missing_ssl_certificate: false
+
+# Only used on Debian/Ubuntu.
+apache_mods_enabled:
+  - rewrite.load
+  - ssl.load
+
+# Set initial apache state. Recommended values: `started` or `stopped`
+apache_state: started
+
+# Set apache state when configuration changes are made. Recommended values:
+# `restarted` or `reloaded`
+apache_restart_state: restarted
+
+# Apache package state; use `present` to make sure it's installed, or `latest`
+# if you want to upgrade or switch versions using a new repo.
+apache_packages_state: present
+
+############################################
+#
+# PHP related variables
+#
+############################################
+php_memory_limit: "256M"
+php_max_execution_time: "90"
+php_upload_max_filesize: "256M"
+php_max_file_uploads: "20"
+php_post_max_size: "150M"
+php_date_timezone: "Europe/Madrid"
+php_opcache.max_accelerated_files: "20000"
+php_realpath_cache_size: "4096K"
+php_realpath_cache_ttl: "600"
+
+php_packages_common:
+  - php7.2
+  - php7.2-cli
+  - php7.2-common
+  - php7.2-gd
+  - php7.2-mbstring
+  - php7.2-pdo
+  - php7.2-xml
+  - php7.2-intl
+  - php7.2-curl
+  - php7.2-zip
+  - php7.2-apcu
+  - php7.2-mysql
+  - php7.2-mongodb
+  - php7.2-opcache
+  - libapache2-mod-php7.2
+  - php-http
+
+php_packages_dev:
+  - php7.2-xdebug
+  - php-codesniffer
+  - phpcpd
+
+php_packages_prod: []

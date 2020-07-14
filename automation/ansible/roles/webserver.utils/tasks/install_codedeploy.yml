@@ -1,0 +1,22 @@
+---
+- name: Download Code Deploy Agent
+  get_url:
+    url=https://aws-codedeploy-eu-west-1.s3.amazonaws.com/latest/install
+    dest=/tmp
+
+- name: Make it executable
+  command: "chmod +x /tmp/install"
+
+- name: Install agent
+  command: "/tmp/install auto"
+  become: True
+
+- name: Delete installation script
+  file:
+    state=absent
+    path=/tmp/install
+
+- name: Make sure service is started
+  service:
+    name: "codedeploy-agent"
+    state: started
