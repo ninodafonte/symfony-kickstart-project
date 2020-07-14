@@ -11,7 +11,6 @@
     - "./vars/web_server_vars.yml"
     - "./vars/web_server_vhosts_common.yml"
     - "./vars/web_server_vhosts_{{ target_environment }}.yml"
-    - "./vars/web_server_vault.yml"
 
   roles:
     - { role: common }

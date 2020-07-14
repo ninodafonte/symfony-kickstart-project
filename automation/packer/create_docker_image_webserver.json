@@ -36,7 +36,6 @@
       "type": "ansible",
       "playbook_file": "../ansible/web_server.yml",
       "extra_arguments": [
-        "--vault-id=~/.ansible_vault",
         "--extra-vars",
         "target_environment=dev"
       ],
