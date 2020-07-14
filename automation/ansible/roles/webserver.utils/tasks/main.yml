@@ -39,21 +39,18 @@
   file:
     path=/etc/ssl/crt
     state=directory
-  when: target_environment == "dev"
 
 - name: Create certificate file for localdomain
   template:
     src: localdomains.crt.j2
     dest: /etc/ssl/crt/localdomains.crt
     mode: 0744
-  when: target_environment == "dev"
 
 - name: Create key file for localdomain
   template:
     src: localdomains.key.j2
     dest: /etc/ssl/crt/localdomains.key
     mode: 0744
-  when: target_environment == "dev"
 
 - name: Create startup command for docker image
   template:

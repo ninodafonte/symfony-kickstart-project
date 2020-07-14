@@ -34,13 +34,17 @@ The default values for the HTTP server deamon are `httpd` (used by Apache) for R
 
 (RedHat/CentOS only) If you have enabled any additional repositories (might I suggest [geerlingguy.repo-epel](https://github.com/geerlingguy/ansible-role-repo-epel) or [geerlingguy.repo-remi](https://github.com/geerlingguy/ansible-role-repo-remi)), those repositories can be listed under this variable (e.g. `remi-php70,epel`). This can be handy, as an example, if you want to install the latest version of PHP 7.0, which is in the Remi repository.
 
+    php_default_version_debian: "7.0"
+
+(Debian/Ubuntu only) The default version of PHP in the given OS version repositories. Defaults to the latest Ubuntu LTS release. Ubuntu 18.04 needs this to be set to `"7.2"` since PHP 7.0 is not available in the default bionic packages.
+
+**If you'd like to be able to switch PHP versions easily, or use a version that's not available in system packages**: You can use the [`geerlingguy.php-versions`](https://galaxy.ansible.com/geerlingguy/php-versions/) role to more easily switch between major PHP versions (e.g. 5.6, 7.1, 7.2).
+
     php_packages_state: "present"
 
-If you have enabled any additional repositories such as [geerlingguy.repo-epel](https://github.com/geerlingguy/ansible-role-repo-epel) or [geerlingguy.repo-remi](https://github.com/geerlingguy/ansible-role-repo-remi), you may want an easy way to swap PHP versions on the fly. By default, this is set to `"present"`. You can override this variable to `"latest"` to upgrade to the latest available version. Combined with php_enablerepo`, a user now doesn't need to manually uninstall the existing PHP packages before installing them from a different repository.
+If you have enabled any additional repositories such as [geerlingguy.repo-epel](https://github.com/geerlingguy/ansible-role-repo-epel) or [geerlingguy.repo-remi](https://github.com/geerlingguy/ansible-role-repo-remi), you may want an easy way to swap PHP versions on the fly. By default, this is set to `"present"`. You can override this variable to `"latest"` to upgrade to the latest available version. Combined with `php_enablerepo`, a user now doesn't need to manually uninstall the existing PHP packages before installing them from a different repository.
 
-You can also use the [`geerlingguy.php-versions`](https://galaxy.ansible.com/geerlingguy/php-versions/) role to more easily switch between major PHP versions (e.g. 5.6, 7.0, 7.1, 7.2).
-
-    php_install_recommends: yes
+    php_install_recommends: true
 
 (Debian/Ubuntu only) Whether to install recommended packages when installing `php_packages`; you might want to set this to `no` explicitly if you're installing a PPA that recommends certain packages you don't want (e.g. Ondrej's `php` PPA will install `php7.0-cli` if you install `php-pear` alongside `php5.6-cli`... which is often not desired!).
 
@@ -58,6 +62,15 @@ When using this role with PHP running as `php-fpm` instead of as a process insid
 
 If you're using Apache, you can easily get it configured to work with PHP-FPM using the [geerlingguy.apache-php-fpm](https://github.com/geerlingguy/ansible-role-apache-php-fpm) role.
 
+    php_fpm_state: started
+    php_fpm_enabled_on_boot: true
+
+Control over the fpm daemon's state; set these to `stopped` and `false` if you want FPM to be installed and configured, but not running (e.g. when installing in a container).
+
+    php_fpm_handler_state: restarted
+
+The handler restarts PHP-FPM by default. Setting the value to `reloaded` will reload the service, intead of restarting it.
+
     php_fpm_listen: "127.0.0.1:9000"
     php_fpm_listen_allowed_clients: "127.0.0.1"
     php_fpm_pm_max_children: 50
@@ -73,6 +86,8 @@ Specific settings inside the default `www.conf` PHP-FPM pool. If you'd like to m
 
 By default, all the extra defaults below are applied through the php.ini included with this role. You can self-manage your php.ini file (if you need more flexility in its configuration) by setting this to `false` (in which case all the below variables will be ignored).
 
+    php_fpm_pool_user: "[apache|nginx|other]" # default varies by OS
+    php_fpm_pool_group: "[apache|nginx|other]" # default varies by OS
     php_memory_limit: "256M"
     php_max_execution_time: "60"
     php_max_input_time: "60"
@@ -98,6 +113,8 @@ By default, all the extra defaults below are applied through the php.ini include
     php_session_save_handler: files
     php_session_save_path: ''
     php_disable_functions: []
+    php_precision: 14
+    php_serialize_precision: "-1"
 
 Various defaults for PHP. Only used if `php_use_managed_ini` is set to `true`.
 
