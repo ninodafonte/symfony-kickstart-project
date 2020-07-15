@@ -1,0 +1,22 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /var/www/symfony-project-kickstart
+permissions:
+  - object: /var/www/symfony-project-kickstart
+    pattern: "**"
+    owner: www-data
+    group: www-data
+    type:
+      - directory
+      - file
+hooks:
+  BeforeInstall:
+    - location: build-scripts/before-install-root.sh
+      timeout: 300
+      runas: root
+  AfterInstall:
+    - location: build-scripts/after-install-root.sh
+      timeout: 300
+      runas: root

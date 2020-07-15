@@ -1,0 +1,47 @@
+# Make sure to configure the secrets in your repository before running this
+# action:
+#
+# AWS_ACCESS_KEY_ID
+# AWS_SECRET_ACCESS_KEY
+# AWS_REGION
+# APPLICATION_NAME (the same you've configured in terraform.tfvars)
+# AWS_S3_DEPLOYMENT_BUCKET (the same you've configured in terraform.tfvars)
+#
+###############################################################################
+name: CI/CD
+# Change workflow_dispatch for push if you want continuous deployment
+# on: push
+on: workflow_dispatch
+jobs:
+  production-deploy:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - uses: actions/checkout@v2
+      - name: AWS Deploy push
+        uses: ItsKarma/aws-cli@v1.70.0
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+        with:
+          args: >-
+            deploy push
+            --application-name "symfony_project_kickstart_${{ secrets.APPLICATION_NAME }}"
+            --description "New automatic deployment for ${{ secrets.APPLICATION_NAME }}"
+            --s3-location s3://${{ secrets.AWS_S3_DEPLOYMENT_BUCKET }}/production.zip
+            --source .
+      - name: AWS Create Deploy
+        uses: ItsKarma/aws-cli@v1.70.0
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+        with:
+          args: >-
+            deploy create-deployment
+            --application-name "symfony_project_kickstart_${{ secrets.APPLICATION_NAME }}"
+            --deployment-config-name CodeDeployDefault.OneAtATime
+            --deployment-group-name SPK_Deployment_Group_Webservers
+            --file-exists-behavior OVERWRITE
+            --s3-location bucket=${{ secrets.AWS_S3_DEPLOYMENT_BUCKET }},key=production.zip,bundleType=zip
