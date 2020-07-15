@@ -33,7 +33,7 @@ resource "aws_instance" "webserver" {
   }
 
   provisioner "local-exec" {
-    command = "ansible-playbook -u ${var.ansible_user} -i '${self.public_ip},' --private-key ${var.private_key} ../ansible/web_server.yml"
+    command = "ansible-playbook -u ${var.ansible_user} -i '${self.public_ip},' --private-key ${var.private_key} --extra-vars 'target_environment=prod' ../ansible/web_server.yml"
   }
 }
 
@@ -73,6 +73,6 @@ resource "aws_instance" "dbserver" {
   }
 
   provisioner "local-exec" {
-    command = "ansible-playbook -u ${var.ansible_user} -i '${self.public_ip},' --private-key ${var.private_key} ../ansible/database_server.yml"
+    command = "ansible-playbook -u ${var.ansible_user} -i '${self.public_ip},' --private-key ${var.private_key} --extra-vars 'target_environment=prod' ../ansible/database_server.yml"
   }
 }

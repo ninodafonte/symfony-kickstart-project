@@ -12,8 +12,8 @@ variable "public_key" {
 
 variable "amis" {
   default = {
-    "eu-west-1" = "ami-049f322a544cfcf88"
-    # Ubuntu in eu-west-1
+    "eu-west-1" = "ami-089cc16f7f08c4457"
+    # Ubuntu 18.04 in eu-west-1
   }
 }
 

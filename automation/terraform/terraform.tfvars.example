@@ -1,14 +1,22 @@
-region       = "eu-west-1"
-amis         = {
-  "eu-west-1" = "ami-049f322a544cfcf88"
+# AWS usage and connection related configuration
+aws_profile = "myAWSProfileName"
+region      = "eu-west-1"
+public_key  = "~/.ssh/somePublicKey.pub"
+private_key = "~/.ssh/somePrivateKey.pem"
+
+# EC2 base configuration (using ami for ubuntu 18.04 in eu-west-1
+ec2_size         = "t2.micro"
+amis             = {
+  "eu-west-1" = "ami-089cc16f7f08c4457"
 }
-ec2_size     = "t3a.micro"
-aws_profile  = "someAWSProfileUser"
-public_key   = "~/.ssh/your_key.pub"
-private_key  = "~/.ssh/your_key.pem"
-ansible_user = "ubuntu"
-deployment_s3_bucket = "someBucketNameForDeployments"
-cidr_vpc = "10.1.0.0/16"
-cidr_subnet = "10.1.0.0/24"
-webserver_private_ip = "10.1.0.1"
-dbserver_private_ip  = "10.1.0.2"
+ansible_user     = "ubuntu"
+application_name = "myApplication"
+
+# Networking configuration
+cidr_vpc             = "10.1.0.0/16"
+cidr_subnet          = "10.1.0.0/24"
+webserver_private_ip = "10.1.0.10"
+dbserver_private_ip  = "10.1.0.20"
+
+# S3 bucket name for continuous integration (used by CodeDeploy to transfer files from Github)
+deployment_s3_bucket = "your-unique-bucket-name-spk-deployment"
