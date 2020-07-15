@@ -10,7 +10,7 @@
 ###############################################################################
 name: CI/CD
 # Change workflow_dispatch for push if you want continuous deployment
-# on: push
+# on: [push, workflow_dispatch]
 on: workflow_dispatch
 jobs:
   production-deploy:
