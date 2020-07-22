@@ -13,6 +13,7 @@
   apt:
     name: ntp
     state: present
+    update_cache: yes
   become: True
 
 - name: Ensure the NTP service is running and enabled
