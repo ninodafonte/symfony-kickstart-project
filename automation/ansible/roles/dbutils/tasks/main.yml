@@ -1,0 +1,7 @@
+---
+- name: Make sure pymysql is present
+  pip:
+    name: pymysql
+    state: present
+  become: True
+    

@@ -36,7 +36,6 @@
       "type": "ansible",
       "playbook_file": "../ansible/database_server.yml",
       "extra_arguments": [
-        "--vault-id=~/.ansible_vault"
       ],
       "ansible_env_vars": [
         "ANSIBLE_SSH_ARGS='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o AddKeysToAgent=no'"

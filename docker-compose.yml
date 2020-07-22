@@ -10,3 +10,7 @@ services:
     environment:
       XDEBUG_CONFIG: "remote_host=host.docker.internal remote_enable=1"
       PHP_IDE_CONFIG: "serverName=my.local"
+  db:
+    image: "spk_local/dbserver:latest"
+    ports:
+      - "127.0.0.1:3306:3306"

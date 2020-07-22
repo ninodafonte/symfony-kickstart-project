@@ -8,11 +8,10 @@
     - setup: # aka gather_facts
 
   vars_files:
-  #  - ../vars/database_server_vars.yml
-  #  - ../vars/database_server_vault.yml
+    - "./vars/database_server_vars.yml"
 
   roles:
     - { role: common }
-  #  - { role: dbutils }
-  #  - { role: deimosfr.mariadb }
-  #  - { role: franklinkim.environment }
+    - { role: geerlingguy.pip }
+    - { role: dbutils }
+    - { role: geerlingguy.mysql }
