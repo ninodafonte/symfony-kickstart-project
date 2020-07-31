@@ -11,9 +11,9 @@ This project provides a template where you get the needed components to provisio
 
 ![Final result - diagram](https://dafonte-dev-static.s3-eu-west-1.amazonaws.com/skp-overview.png "Diagram of what you get with this project")
 
-Here in this [blog post](https://dafonte.dev/kickstart-symfony-project-dev-and-production-in-20-minutes), you'll find all the details about the "why" and "how" of this project so if you want to know more, or you run into trouble using it, please refer to that page to make sure you know the details.  
+Here in this [blog post](https://dafonte.dev/kickstart-symfony-project-dev-and-production-in-20-minutes.html), you'll find all the details about the "why" and "how" of this project so if you want to know more, or you run into trouble using it, please refer to that page to make sure you know the details.  
 
-I'll keep in this README the necessary steps to have the environments running leaving the detailed explanation and customizations in the [blog post](https://dafonte.dev/kickstart-symfony-project-dev-and-production-in-20-minutes).
+I'll keep in this README the necessary steps to have the environments running leaving the detailed explanation and customizations in the [blog post](https://dafonte.dev/kickstart-symfony-project-dev-and-production-in-20-minutes.html).
 
 ## My opinionated approach
 
@@ -142,7 +142,7 @@ Configure in `terraform.tfvars` the needed variables:
     # S3 bucket name for continuous integration (used by CodeDeploy to transfer files from Github)
     deployment_s3_bucket = "your-unique-bucket-name-spk-deployment"
 
-If there is any doubt about any of these parameters please take a look at the [blog post](https://dafonte.dev/kickstart-symfony-project-dev-and-production-in-20-minutes) mentioned above, there is an in-deep explanation of the whole system.
+If there is any doubt about any of these parameters please take a look at the [blog post](https://dafonte.dev/kickstart-symfony-project-dev-and-production-in-20-minutes.html) mentioned above, there is an in-deep explanation of the whole system.
 
 Once you get the correct values in there, just launch the terraform process to get them created.
 The first time you'll need to initialize the terraform state and libraries:
@@ -169,7 +169,7 @@ Be aware, depending on your AWS account, you could be incurring on charges for t
 Included with the terraform scripts you applied to create the AWS infrastructure, there are included a few extra things to enable continuous integration in the system.
 Basically, a CodeDeploy application has been created, a deployment group (with your new ec2 web server in it) and a S3 bucket to host the code as an intermediate step between Github and your EC2 instance.
 
-In the [blog post](https://dafonte.dev/kickstart-symfony-project-dev-and-production-in-20-minutes) you'll find the detailed explanation about how this works but here's what you need to know in order to enable continuous integration in your repo.
+In the [blog post](https://dafonte.dev/kickstart-symfony-project-dev-and-production-in-20-minutes.html) you'll find the detailed explanation about how this works but here's what you need to know in order to enable continuous integration in your repo.
 
 There is a Github deploy already configured for you in the project. The only thing you need is to create some secrets in your repo settings:
 
