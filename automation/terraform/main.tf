@@ -39,7 +39,8 @@ module "ec2" {
   security_groups_dbserver  = [
     module.network.security_group_ssh_id,
     module.network.security_group_tls_id,
-    module.network.security_group_icmp_id
+    module.network.security_group_icmp_id,
+    module.network.security_group_mysql_id
   ]
 }
 

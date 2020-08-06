@@ -109,3 +109,19 @@ resource "aws_security_group" "ping-ICMP" {
 
   tags = var.additional_tags
 }
+
+resource "aws_security_group" "mysql" {
+  name        = "default-mysql"
+  description = "Default security group that allows to access mysql instance"
+  vpc_id      = aws_vpc.vpc.id
+
+  ingress {
+    from_port       = 3306
+    to_port         = 3306
+    protocol        = "tcp"
+    security_groups = [
+      aws_security_group.web.id]
+  }
+
+  tags = var.additional_tags
+}

@@ -21,3 +21,7 @@ output "security_group_tls_id" {
 output "security_group_icmp_id" {
   value = aws_security_group.ping-ICMP.id
 }
+
+output "security_group_mysql_id" {
+  value = aws_security_group.mysql.id
+}
