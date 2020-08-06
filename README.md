@@ -93,7 +93,7 @@ Create the dbserver docker image (it will be called spk_local/dbserver:latest)
 	
 Go back to your root folder and start your docker environment (in the background). If it's the first time you run it, the images have to be created:
 
-	docker-compose -d up
+	docker-compose up -d
 
 For the next time, unless you want to create and destroy your containers all the time, I'd simply use:
 
